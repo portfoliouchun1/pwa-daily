@@ -1,14 +1,10 @@
-[
-    {
-        "relation": [
-            "delegate_permission/common.handle_all_urls"
-        ],
-        "target": {
-            "namespace": "android_app",
-            "package_name": "io.github.portfoliouchun1.twa",
-            "sha256_cert_fingerprints": [
-                "33:9A:43:9B:10:88:F7:2D:21:E8:10:D5:59:08:66:B1:4E:81:DA:6F:C3:86:AC:BD:F4:B4:47:3E:AC:06:82:79"
-            ]
-        }
-    }
-]
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.portfoliouchun1.twa",
+    "sha256_cert_fingerprints": [
+      "2E:95:9E:7E:D0:4E:64:6C:3A:3B:42:EE:4F:68:C7:5E:32:86:DD:E0:58:A4:5C:CD:32:9C:E6:EE:43:84:DA:34"
+    ]
+  }
+}]
