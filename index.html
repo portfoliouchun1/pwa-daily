@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+
+<title>Kundalik</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1f2328;--mut:#6b7280;--line:#e5e1d8;--acc:#2f6f5e;--accb:#e3f0ec;--danger:#b42318;--code:#0f1720;--codeink:#e6edf3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141816;--card:#1d2320;--ink:#e8ece9;--mut:#9aa6a0;--line:#2c3430;--acc:#5fb59d;--accb:#22332e;--danger:#f0877b}}
+:root[data-theme="dark"]{--bg:#141816;--card:#1d2320;--ink:#e8ece9;--mut:#9aa6a0;--line:#2c3430;--acc:#5fb59d;--accb:#22332e;--danger:#f0877b}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+aside{border-right:1px solid var(--line);padding:18px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+aside h1{font-size:20px;margin:0 0 14px;display:flex;gap:8px;align-items:center}
+.topics{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.topic{display:flex;justify-content:space-between;gap:8px;text-align:left;background:none;border:0;color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer;font:inherit}
+.topic:hover{background:var(--accb)}
+.topic.on{background:var(--acc);color:#fff}
+.topic small{opacity:.7}
+.addt{display:flex;gap:6px}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{resize:vertical;min-height:90px}
+input[type=checkbox],input[type=radio]{width:auto}
+main{padding:22px clamp(14px,4vw,40px) 80px;max-width:860px;width:100%}
+.head{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.head h2{margin:0;font-size:26px;flex:1;min-width:140px;outline:none;border-radius:6px;padding:2px 4px}
+.head h2:focus{background:var(--accb)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:9px}
+button:hover{border-color:var(--acc)}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button.dng{color:var(--danger)}
+button.armed{background:var(--danger);color:#fff;border-color:var(--danger)}
+.tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;position:sticky;top:0;z-index:2}
+.blk{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.bar button{padding:3px 9px;font-size:13px}
+.sp{flex:1}
+.tag{background:var(--accb);color:var(--acc);border-radius:99px;padding:1px 10px;font-size:12px;font-weight:600}
+time{color:var(--mut);font-size:12px}
+.txt{white-space:pre-wrap;word-break:break-word}
+.blk img,.blk video{max-width:100%;border-radius:10px;display:block}
+.cap{color:var(--mut);font-size:14px;margin-top:6px}
+pre{background:var(--code);color:var(--codeink);padding:12px;border-radius:10px;overflow-x:auto;margin:0;font:14px/1.5 ui-monospace,Menlo,Consolas,monospace}
+.lang{color:var(--mut);font-size:12px}
+.opt{display:flex;gap:9px;align-items:flex-start;padding:5px 0;cursor:pointer}
+.done{text-decoration:line-through;color:var(--mut)}
+.ttl{font-weight:600;margin-bottom:4px}
+.prog{height:5px;background:var(--line);border-radius:9px;margin:6px 0 4px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--acc)}
+.form{display:grid;gap:8px}
+.form label{font-size:13px;color:var(--mut)}
+.row{display:flex;gap:8px;justify-content:flex-end}
+.empty{text-align:center;color:var(--mut);padding:50px 10px}
+a{color:var(--acc)}
+.lnk{display:block;border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-decoration:none;word-break:break-all}
+@media(max-width:700px){
+.app{grid-template-columns:1fr}
+aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+.topics{flex-direction:row;overflow-x:auto}
+.topic{white-space:nowrap}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<h1>Kundalik</h1>
+<div class="topics" id="topics"></div>
+<div class="addt"><input id="newt" placeholder="Yangi mavzu…" maxlength="60"><button class="pri" id="addt">+</button></div>
+</aside>
+<main id="main"></main>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LABEL={text:'Matn',image:'Rasm',video:'Video',check:'Vazifalar',radio:'Tanlov',code:'Kod',link:'Havola'};
+let S={topics:[],active:null},editing=null,pending=null;
+
+/* ---- saqlash (IndexedDB, zaxira: localStorage) ---- */
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('kundalik',1);r.onupgradeneeded=()=>r.result.createObjectStore('k');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function load(){
+  try{const db=await idb();return await new Promise(res=>{const q=db.transaction('k').objectStore('k').get('s');q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)})}
+  catch(e){try{return JSON.parse(localStorage.getItem('kundalik'))}catch(e){return null}}
+}
+async function save(){
+  try{const db=await idb();db.transaction('k','readwrite').objectStore('k').put(S,'s')}
+  catch(e){try{localStorage.setItem('kundalik',JSON.stringify(S))}catch(e){}}
+}
+const topic=()=>S.topics.find(t=>t.id===S.active);
+const fmt=t=>new Date(t).toLocaleString('uz-UZ',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+
+/* ---- ko'rinish ---- */
+function renderTopics(){
+  $('#topics').innerHTML=S.topics.map(t=>`<button class="topic ${t.id===S.active?'on':''}" data-id="${t.id}"><span>${esc(t.name)}</span><small>${t.blocks.length}</small></button>`).join('');
+}
+function view(b){
+  const d=b.data;
+  switch(b.type){
+    case 'text':return `<div class="txt">${esc(d.text)}</div>`;
+    case 'code':return `<div class="lang">${esc(d.lang||'kod')} <button data-act="copy" style="padding:1px 8px;font-size:12px">Nusxalash</button></div><pre><code>${esc(d.text)}</code></pre>`;
+    case 'link':return `<a class="lnk" href="${esc(d.url)}" target="_blank" rel="noopener noreferrer">🔗 <b>${esc(d.title||d.url)}</b><br><small>${esc(d.url)}</small></a>`;
+    case 'image':return d.src?`<img src="${esc(d.src)}" alt="${esc(d.caption)}">${d.caption?`<div class="cap">${esc(d.caption)}</div>`:''}`:'<div class="cap">Rasm tanlanmagan</div>';
+    case 'video':return d.src?`<video src="${esc(d.src)}" controls playsinline preload="metadata"></video>${d.caption?`<div class="cap">${esc(d.caption)}</div>`:''}`:'<div class="cap">Video tanlanmagan</div>';
+    case 'check':{
+      const n=d.items.filter(i=>i.done).length,p=d.items.length?Math.round(n*100/d.items.length):0;
+      return `${d.title?`<div class="ttl">${esc(d.title)}</div>`:''}`+d.items.map((it,i)=>`<label class="opt"><input type="checkbox" data-act="tick" data-i="${i}" ${it.done?'checked':''}><span class="${it.done?'done':''}">${esc(it.t)}</span></label>`).join('')+`<div class="prog"><i style="width:${p}%"></i></div><small class="cap">${n}/${d.items.length} bajarildi</small>`;}
+    case 'radio':return `${d.title?`<div class="ttl">${esc(d.title)}</div>`:''}`+d.items.map((t,i)=>`<label class="opt"><input type="radio" name="r${b.id}" data-act="pick" data-i="${i}" ${d.sel===i?'checked':''}><span>${esc(t)}</span></label>`).join('');
+  }
+}
+function form(b){
+  const d=b.data;let h='';
+  const cap=`<label>Izoh</label><input name="caption" value="${esc(d.caption)}">`;
+  switch(b.type){
+    case 'text':h=`<textarea name="text" rows="5" placeholder="Fikrlaringizni yozing…">${esc(d.text)}</textarea>`;break;
+    case 'code':h=`<label>Til (ixtiyoriy)</label><input name="lang" value="${esc(d.lang)}" placeholder="javascript"><label>Kod</label><textarea name="text" rows="7" spellcheck="false" style="font-family:ui-monospace,Menlo,monospace">${esc(d.text)}</textarea>`;break;
+    case 'link':h=`<label>Manzil (URL)</label><input name="url" value="${esc(d.url)}" placeholder="https://…"><label>Sarlavha (ixtiyoriy)</label><input name="title" value="${esc(d.title)}">`;break;
+    case 'image':h=`<label>Qurilmadan rasm tanlang</label><input type="file" accept="image/*" data-act="file"><label>yoki rasm havolasi</label><input name="src" value="${d.src&&!d.src.startsWith('data:')?esc(d.src):''}" placeholder="https://…jpg">${d.src?`<img id="prev" src="${esc(d.src)}" style="max-height:160px;width:auto">`:'<img id="prev" style="max-height:160px;width:auto;display:none">'}${cap}`;break;
+    case 'video':h=`<label>Qurilmadan video tanlang</label><input type="file" accept="video/*" data-act="file"><label>yoki video havolasi (to'g'ridan-to'g'ri .mp4 / .webm)</label><input name="src" value="${d.src&&!d.src.startsWith('data:')?esc(d.src):''}" placeholder="https://…mp4"><div class="cap" id="fn">${d.src?'Video bor':''}</div>${cap}`;break;
+    case 'check':h=`<label>Sarlavha (ixtiyoriy)</label><input name="title" value="${esc(d.title)}"><label>Har qatorga bitta vazifa</label><textarea name="items" rows="5">${esc(d.items.map(i=>i.t).join('\n'))}</textarea>`;break;
+    case 'radio':h=`<label>Savol / sarlavha</label><input name="title" value="${esc(d.title)}"><label>Har qatorga bitta variant</label><textarea name="items" rows="5">${esc(d.items.join('\n'))}</textarea>`;break;
+  }
+  return `<div class="form">${h}<div class="row"><button data-act="cancel">Bekor</button><button class="pri" data-act="save">Saqlash</button></div></div>`;
+}
+function block(b){
+  return `<article class="blk" data-id="${b.id}"><div class="bar"><span class="tag">${LABEL[b.type]}</span><time>${fmt(b.created)}</time><span class="sp"></span>${editing===b.id?'':'<button data-act="edit">✎ Tahrirlash</button>'}<button class="dng" data-act="del">🗑 O\'chirish</button></div>${editing===b.id?form(b):view(b)}</article>`;
+}
+function render(){
+  renderTopics();
+  const t=topic(),m=$('#main');
+  if(!t){m.innerHTML='<div class="empty">Boshlash uchun chap tomonda mavzu yarating </div>';return}
+  m.innerHTML=`<div class="head"><h2 contenteditable="plaintext-only" spellcheck="false" id="tname">${esc(t.name)}</h2><button class="dng" data-act="deltopic">Mavzuni o'chirish</button></div>
+  <div class="tools">${Object.keys(LABEL).map(k=>`<button data-add="${k}">+ ${LABEL[k]}</button>`).join('')}</div>
+  ${t.blocks.length?t.blocks.slice().reverse().map(block).join(''):'<div class="empty">Bu mavzu hali bo\'sh. Yuqoridagi tugmalar orqali yozuv qo\'shing.</div>'}`;
+}
+
+/* ---- amallar ---- */
+const DEF={text:{text:''},code:{text:'',lang:''},link:{url:'',title:''},image:{src:'',caption:''},video:{src:'',caption:''},check:{title:'',items:[]},radio:{title:'',items:[],sel:-1}};
+function addTopic(){
+  const v=$('#newt').value.trim();if(!v)return;
+  const t={id:uid(),name:v,blocks:[]};S.topics.push(t);S.active=t.id;$('#newt').value='';editing=null;save();render();
+}
+$('#addt').onclick=addTopic;
+$('#newt').onkeydown=e=>{if(e.key==='Enter')addTopic()};
+$('#topics').onclick=e=>{const b=e.target.closest('.topic');if(!b)return;S.active=b.dataset.id;editing=null;save();render()};
+
+function arm(btn,fn){
+  if(btn.dataset.armed){fn();return}
+  const old=btn.textContent;btn.dataset.armed=1;btn.classList.add('armed');btn.textContent='Aniq o\'chirilsinmi?';
+  setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.classList.remove('armed');btn.textContent=old}},3000);
+}
+function readFile(f,cb){
+  if(f.type.startsWith('image/')){
+    const img=new Image(),u=URL.createObjectURL(f);
+    img.onload=()=>{const k=Math.min(1,1280/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.82));URL.revokeObjectURL(u)};
+    img.src=u;
+  }else{const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}
+}
+$('#main').addEventListener('change',e=>{
+  const el=e.target,a=el.dataset.act,art=el.closest('.blk');
+  if(!a)return;
+  const t=topic(),b=art&&t.blocks.find(x=>x.id===art.dataset.id);
+  if(a==='file'){
+    const f=el.files[0];if(!f)return;
+    if(f.size>60*1024*1024){alert('Fayl juda katta (60 MB dan kichik bo\'lsin).');el.value='';return}
+    readFile(f,src=>{pending=src;const p=art.querySelector('#prev');if(p){p.src=src;p.style.display='block'}const fn=art.querySelector('#fn');if(fn)fn.textContent='Tanlandi: '+f.name});
+  }
+  if(a==='tick'){b.data.items[+el.dataset.i].done=el.checked;save();render()}
+  if(a==='pick'){b.data.sel=+el.dataset.i;save();render()}
+});
+$('#main').addEventListener('click',e=>{
+  const add=e.target.closest('[data-add]');
+  if(add){const t=topic(),b={id:uid(),type:add.dataset.add,created:Date.now(),data:JSON.parse(JSON.stringify(DEF[add.dataset.add]))};t.blocks.push(b);editing=b.id;pending=null;save();render();document.querySelector('.blk textarea,.blk input')?.focus();return}
+  const btn=e.target.closest('[data-act]');if(!btn)return;
+  const a=btn.dataset.act,t=topic(),art=btn.closest('.blk'),b=art&&t.blocks.find(x=>x.id===art.dataset.id);
+  if(a==='deltopic')arm(btn,()=>{S.topics=S.topics.filter(x=>x.id!==t.id);S.active=S.topics[0]?.id||null;editing=null;save();render()});
+  if(a==='del')arm(btn,()=>{t.blocks=t.blocks.filter(x=>x.id!==b.id);if(editing===b.id)editing=null;save();render()});
+  if(a==='edit'){editing=b.id;pending=null;render()}
+  if(a==='cancel'){const empty=JSON.stringify(b.data)===JSON.stringify(DEF[b.type]);if(empty)t.blocks=t.blocks.filter(x=>x.id!==b.id);editing=null;save();render()}
+  if(a==='copy'){navigator.clipboard?.writeText(b.data.text);btn.textContent='Nusxalandi ✓'}
+  if(a==='save'){
+    const g=n=>art.querySelector(`[name=${n}]`)?.value.trim()??'',d=b.data;
+    switch(b.type){
+      case 'text':d.text=art.querySelector('[name=text]').value;break;
+      case 'code':d.text=art.querySelector('[name=text]').value;d.lang=g('lang');break;
+      case 'link':{let u=g('url');if(u&&!/^https?:\/\//i.test(u))u='https://'+u;d.url=u;d.title=g('title');break}
+      case 'image':case 'video':{const u=g('src');d.src=pending||u||d.src;if(!pending&&!u)d.src='';d.caption=g('caption');break}
+      case 'check':{const old=Object.fromEntries(d.items.map(i=>[i.t,i.done]));d.items=g('items').split('\n').map(s=>s.trim()).filter(Boolean).map(s=>({t:s,done:!!old[s]}));d.title=g('title');break}
+      case 'radio':{const sel=d.items[d.sel];d.items=g('items').split('\n').map(s=>s.trim()).filter(Boolean);d.sel=d.items.indexOf(sel);d.title=g('title');break}
+    }
+    editing=null;pending=null;save();render();
+  }
+});
+$('#main').addEventListener('focusout',e=>{
+  if(e.target.id!=='tname')return;
+  const t=topic(),v=e.target.textContent.trim();
+  if(v&&v!==t.name){t.name=v;save();renderTopics()}else e.target.textContent=t.name;
+});
+$('#main').addEventListener('keydown',e=>{if(e.target.id==='tname'&&e.key==='Enter'){e.preventDefault();e.target.blur()}});
+
+(async()=>{
+  const s=await load();
+  if(s&&s.topics)S=s;
+  else{S={topics:[{id:uid(),name:'Birinchi mavzu',blocks:[{id:uid(),type:'text',created:Date.now(),data:{text:'Kundalikka xush kelibsiz! Yuqoridagi tugmalar orqali matn, rasm, video, vazifa, kod va havola qo\'shing.'}}]}],active:null};S.active=S.topics[0].id}
+  if(!S.active||!topic())S.active=S.topics[0]?.id||null;
+  render();
+})();
+</script>
+</body>
+</html>
