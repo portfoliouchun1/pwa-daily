@@ -1,7 +1,7 @@
 {
-  "name": "Obektivachi",
-  "short_name": "Obektivkachi",
-  "description": "malumotnoma tayyorlash uchun",
+  "name": "Daily",
+  "short_name": "Daily",
+  "description": "Kundalik hayot uchun",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -11,13 +11,13 @@
   "lang": "uz",
   "icons": [
     {
-      "src": "icons/logo3.png",
+      "src": "icons/DAILY.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/logo3.png",
+      "src": "icons/DAILY.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

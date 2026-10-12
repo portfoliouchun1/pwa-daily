@@ -1,10 +1,10 @@
-const CACHE_NAME = "obektivkachi-pwa-v7";
+const CACHE_NAME = "kundalik-pwa-v1";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icons/logo3.png",
-  "./icons/logo3.png"
+  "./icons/DAILY.png",
+  "./icons/DAILY.png"
 ];
 
 // ===== O'rnatish =====
